@@ -1,0 +1,68 @@
+;; From http://pastebin.com/raw/w7Rm3R50
+;; for https://github.com/jdee-emacs/jdee/issues/84
+
+;;
+;; Maven get dependency
+
+;; If you want to only download dependencies without doing anything else, then it's:
+
+;; mvn dependency:resolve
+;; Or to download a single dependency:
+
+;; mvn dependency:get -Dartifact=groupId:artifactId:version
+;; If you need to download from a specific repository, you can specify that with -DrepoUrl=...
+
+;; shareeditflag
+;; edited Jun 1 at 14:22
+
+;; Aaron Digulla
+;; 205k60368577
+;; answered Dec 20 '11 at 17:10
+
+;; Andrew Spencer
+;; 3,65821033
+;; 1	
+ 		
+;; I get this error when I run that command: [ERROR] Failed to execute goal org.apache.maven.plugins:maven-dependency-plugin:2.1:get (default-cli) on project standalone-pom: The parameters 'repositoryUrl' for goal org.apache.maven.plugins:maven-dependency-plugin:2.1:get are missing or invalid -> [Help 1]. Specifying -DrepositoryUrl=... doesn't work. – Chry Cheng Mar 28 '12 at 11:12
+;; 1	
+ 		
+;; I think I've found the solution. The parameter should be "repoUrl" and not "repositoryUrl". – Chry Cheng Mar 29 '12 at 5:08
+
+;;
+;; This is a generated file using the Gradle task that produces JDEE project files.
+;; See http://ignatyev-dev.blogspot.com/2013/07/gradle-projects-in-jdee.html
+;; To recreate, run "gradlew jdee".
+;;
+;;
+;; c = jars on classpath
+;; p = the project directory 
+
+(jdee-project-file-version
+ "1.0")
+(jdee-set-variables
+ '(jdee-compile-option-directory
+  "%p/build/classes/main")
+ '(jdee-junit-working-directory
+  "%p")
+ '(jdee-compile-option-source
+  '(
+   "default"))
+ '(jdee-compile-option-target
+  '(
+   "default"))
+ '(jdee-sourcepath
+  '(
+   "%p/src/main/resources"
+   "%p/src/main/java"
+   "%p/src/test/resources"
+   "%p/src/test/java"))
+ '(jdee-global-classpath
+  '(
+   "%p/build/classes/main"
+   "%p/build/classes/test"
+   "%p/src/main/resources"
+   "%p/src/main/java"
+   "%p/src/test/resources"
+   "%p/src/test/java"
+   %c
+)))
