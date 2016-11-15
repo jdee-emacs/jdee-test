@@ -2,3 +2,4 @@ target
 prj.el
 pom.xml
 *~
+*.class
