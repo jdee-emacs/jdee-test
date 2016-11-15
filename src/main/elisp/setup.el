@@ -110,32 +110,66 @@
       (apply #'maven-get-dep (append gavl '("sources" "javadoc"))))
     (progress-reporter-done reporter)))
 
-(defun xxx (rtnval gavl)
-  (let ((gavl+ (cons (slashify (car gavl)) gavl)))
-    (concat rtnval
-	    (format "\"%s\"\n"
-		    (maven-gavl-to-url maven-local-repo gavl+)))))
 
-(defun apply-template (project-dir template gavls)
-  (let ((jars (cl-reduce #'xxx gavls :initial-value "")))
+        ;; <dependency>
+        ;;     <groupId>org.beanshell</groupId>
+        ;;     <artifactId>bsh</artifactId>
+        ;;     <version>2.0b5</version>
+        ;; </dependency>
+
+        ;; <dependency>
+        ;;     <groupId>junit</groupId>
+        ;;     <artifactId>junit</artifactId>
+        ;;     <version>4.12</version>
+        ;; </dependency>
+(defun gavl-to-dependency (gavl)
+  (let ((group (car gavl))
+	(artifact (cadr gavl))
+	(version (caddr gavl)))
+    (format "<dependency>\n<groupId>%s</groupId>\n<artifactId>%s</artifactId>\n<version>%s</version>\n</dependency>\n" group artifact version)))
+
+(defun gavl-to-jar (gavl)
+  (let ((gavl+ (cons (slashify (car gavl)) gavl)))
+    (format "\"%s\"\n"
+	    (maven-gavl-to-url maven-local-repo gavl+))))
+
+  
+(defun apply-template (project-dir fn template dest gavls)
+  (let ((jars (cl-reduce #'concat (mapcar fn gavls) :initial-value "")))
     (with-temp-buffer
       (insert
        (format-spec template (format-spec-make ?c jars
 					       ?p (directory-file-name project-dir))))
-      (emacs-lisp-mode)
+      (write-file (expand-file-name dest project-dir) nil)
+      (set-auto-mode)
       (indent-region (point-min) (point-max))
-      (write-file (expand-file-name "prj.el" project-dir)))))
+      (write-file (expand-file-name dest project-dir) nil))))
+
       
 
 (defun make-prj-el (&optional prj-dir)
+  "Create a prj.el from global-classpath.gav"
   (let* ((README (expand-file-name-up "README.md" (or prj-dir default-directory)))
 	 (elisp-dir (expand-file-name-up "src/main/elisp" (or prj-dir default-directory)))
 	 (project-dir (file-name-directory README))
 	 (gavs (read-lines (expand-file-name "global-classpath.gav" elisp-dir)))
 	 (template (slurp (expand-file-name "prj.el.template" project-dir)))
 	 (gavls (mapcar #'split-gav gavs)))
-    (apply-template project-dir template gavls) 
+    (apply-template project-dir #'gavl-to-jar template "prj.el" gavls) 
     (maven-get-deps gavls)))
+
+    
+	
+(defun make-pom-xml (&optional prj-dir)
+  "Create a pom.xml from global-classpath.gav"
+  (let* ((README (expand-file-name-up "README.md" (or prj-dir default-directory)))
+	 (elisp-dir (expand-file-name-up "src/main/elisp" (or prj-dir default-directory)))
+	 (project-dir (file-name-directory README))
+	 (gavs (read-lines (expand-file-name "global-classpath.gav" elisp-dir)))
+	 (template (slurp (expand-file-name "pom.xml.template" project-dir)))
+	 (gavls (mapcar #'split-gav gavs)))
+    (apply-template project-dir #'gavl-to-dependency template "pom.xml" gavls)))
+
 
     
 	
