@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
  */
 
 public class Gh80 {
+    String test = "['']";
     final static private Pattern pattFlName = Pattern.compile("([-'A-Za-z .]+)[ ,;]+([-'A-Za-z]+)$");
     final static private Pattern pattLfName = Pattern.compile("^([-'A-Za-z]+)[ ,;]+([-'A-Za-z .]+)");
 }
